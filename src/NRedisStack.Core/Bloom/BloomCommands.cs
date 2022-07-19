@@ -26,9 +26,39 @@ namespace NRedisStack.Core
             return _db.Execute(BF.INFO, key);
         }
 
-        public RedisResult Insert(RedisKey key)
+
+
+        public RedisResult Insert(RedisKey key, RedisValue[] items, int? capacity = null, double? error = null, int? expansion = null, bool nocreate = false, bool nonscaling = false) //NOT DONE
         {
-            return _db.Execute(BF.INFO, key);
+            if (items == null)
+                throw new ArgumentNullException(nameof(items));
+
+            var args = Helper.CreateArrayWithoutNull(capacity,error,expansion);
+            RedisValue[] arr = new RedisValue[1 + args.Length + (nocreate ? 1 : 0) + (nonscaling ? 1 : 0) + items.Length];
+
+            int i = 0;
+
+            arr[i++] = key.ToString();
+
+            foreach(var argument in args)
+            {
+                arr[i++] = argument.ToString();
+            }
+
+            if(nocreate)
+                arr[i++] = BloomArgs.NOCREATE;
+
+            if(nonscaling)
+                arr[i++] = BloomArgs.NONSCALING;
+
+            foreach(var item in items)
+            {
+                arr[i++] = item;
+            }
+
+
+
+            return _db.Execute(BF.INSERT, arr.ToList());
         }
 
         public RedisResult ScanDump(RedisKey key, int iterator)
@@ -38,8 +68,11 @@ namespace NRedisStack.Core
 
         public RedisResult LoadChunk(RedisKey key, int iterator, string data)
         {
-            return _db.Execute(BF.INFO, key, iterator, data);
+            return _db.Execute(BF.LOADCHUNK, key, iterator, data);
         }
 
+        // BF.MADD
+        // BF.MEXISTS
+        // BF.RESERVE
     }
 }
