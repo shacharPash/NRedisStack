@@ -5,7 +5,7 @@ namespace NRedisStack.Core
     {
         public static object[] CreateArrayWithoutNull(params object[] args)
         {
-            //var result = new List<RedisValue>();
+            // TODO: If the object is RedisValue, need to check if it's not null (IsNull)
             return args.Where(x => x != null).ToArray();
         }
     }

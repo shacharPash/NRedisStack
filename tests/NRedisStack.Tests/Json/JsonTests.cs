@@ -3,7 +3,6 @@ using StackExchange.Redis;
 using Moq;
 using NRedisStack.Core.RedisStackCommands;
 
-
 namespace NRedisStack.Tests;
 
 public class JsonTests : AbstractNRedisStackTest, IDisposable
@@ -44,15 +43,15 @@ public class JsonTests : AbstractNRedisStackTest, IDisposable
         Assert.Equal(db.JSON().Get(key).ToString(), expected);
     }
 
-    // [Fact]
-    // public void TestJsonGet()
-    // {
-    //     var obj = new Person { Name = "Shachar", Age = 23 };
-    //     IDatabase db = redisFixture.Redis.GetDatabase();
+    [Fact]
+    public void TestJsonGet()
+    {
+        var obj = new Person { Name = "Shachar", Age = 23 };
+        IDatabase db = redisFixture.Redis.GetDatabase();
 
-    //     db.JSON().Set(key, "$", obj);
+        db.JSON().Set(key, "$", obj);
 
-    //     string expected = "[222111\"Shachar\"222]";
-    //     Assert.Equal(db.JSON().Get(key, "111", "222", "333", "$.Name").ToString(), expected);
-    // }
+        string expected = "[222111\"Shachar\"222]";
+        Assert.Equal(db.JSON().Get(key, "111", "222", "333", "$.Name").ToString(), expected);
+    }
 }

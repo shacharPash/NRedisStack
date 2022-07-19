@@ -45,7 +45,7 @@ namespace NRedisStack.Core
             // {
             //     return _db.Execute(JSON.GET);
             // }
-            return _db.Execute(JSON.GET, args.ToList());
+            return _db.Execute(JSON.GET, new List<object> { key }); //TODO: put back the params
         }
     }
 }

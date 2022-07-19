@@ -1,5 +1,6 @@
 using NRedisStack.Core.Literals;
 using StackExchange.Redis;
+
 namespace NRedisStack.Core
 {
 
@@ -26,39 +27,43 @@ namespace NRedisStack.Core
             return _db.Execute(BF.INFO, key);
         }
 
-
-
-        public RedisResult Insert(RedisKey key, RedisValue[] items, int? capacity = null, double? error = null, int? expansion = null, bool nocreate = false, bool nonscaling = false) //NOT DONE
+        public RedisResult Insert(RedisKey key, string[] items, int? capacity = null, double? error = null, int? expansion = null, bool nocreate = false, bool nonscaling = false) //NOT DONE
         {
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
 
-            var args = Helper.CreateArrayWithoutNull(capacity,error,expansion);
-            RedisValue[] arr = new RedisValue[1 + args.Length + (nocreate ? 1 : 0) + (nonscaling ? 1 : 0) + items.Length];
+            // var args = Helper.CreateArrayWithoutNull(capacity,error,expansion);
+            List<object> args = new List<object> {key};
+            args.AddRange(Helper.CreateArrayWithoutNull(capacity,
+                                                        error,
+                                                        expansion));
 
-            int i = 0;
+            // int i = 0;
 
-            arr[i++] = key.ToString();
+            // arr[i++] = key.ToString();
 
-            foreach(var argument in args)
-            {
-                arr[i++] = argument.ToString();
+            // foreach(var argument in args)
+            // {
+            //     arr[i++] = argument.ToString();
+            // }
+
+            if (capacity != null) {
+                args.Add(BloomArgs.CAPACITY);
+                args.Add(capacity);
             }
 
             if(nocreate)
-                arr[i++] = BloomArgs.NOCREATE;
+                args.Add(BloomArgs.NOCREATE);
 
             if(nonscaling)
-                arr[i++] = BloomArgs.NONSCALING;
+                args.Add(BloomArgs.NONSCALING);
 
             foreach(var item in items)
             {
-                arr[i++] = item;
+                args.Add(item);
             }
 
-
-
-            return _db.Execute(BF.INSERT, arr.ToList());
+            return _db.Execute(BF.INSERT, args);
         }
 
         public RedisResult ScanDump(RedisKey key, int iterator)

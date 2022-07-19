@@ -39,7 +39,7 @@ public class BloomTests : AbstractNRedisStackTest, IDisposable
     public void TestInsert()
     {
         IDatabase db = redisFixture.Redis.GetDatabase();
-        RedisValue[] items = new RedisValue[] { "foo", "bar", "baz" };
+        string[] items = new string[] { "foo", "bar", "baz" };
         db.BF().Insert("filter", items, 1000, 0.5, null, true, false);
         //db.SetAdd("key", "value");
         Assert.True(1 == 1);
